@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:untitled/core/services/auth_service.dart';
-import 'package:untitled/core/services/auth_exceptions.dart';
 import 'package:untitled/core/providers/auth_provider.dart';
 import 'package:untitled/features/auth/presentation/widgets/email_password_form.dart';
 import 'package:untitled/features/auth/presentation/widgets/phone_form.dart';
@@ -23,8 +19,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _errorMessage;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
     // Listen to auth state changes to handle auto-login
     ref.listen(authStateChangesProvider, (previous, next) {
       next.when(
@@ -36,42 +31,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         },
         loading: () {},
         error: (error, stack) {
-          setState(() {
-            _errorMessage = error.toString();
-          });
+          if (mounted) {
+            setState(() {
+              _errorMessage = error.toString();
+            });
+          }
         },
       );
     });
-  }
 
-  void _handleLoginSuccess() {
-    // Clear error message
-    setState(() {
-      _errorMessage = null;
-    });
-
-    // Router will handle the redirect automatically based on user role
-  }
-
-  void _handleLoginError(String error) {
-    setState(() {
-      _errorMessage = error;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               // Logo or icon
               Icon(
                 Icons.menu_book,
@@ -95,6 +78,45 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: Colors.grey,
                 ),
               ),
+              const SizedBox(height: 32),
+              // Error message display
+              if (_errorMessage != null)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        color: Colors.red.shade700,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(
+                            color: Colors.red.shade700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        color: Colors.red.shade700,
+                        onPressed: () {
+                          setState(() {
+                            _errorMessage = null;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 32),
               // Mode toggle
               SegmentedButton<String>(
@@ -128,7 +150,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 PhoneForm(
                   errorMessage: _errorMessage,
                 ),
-            ],
+              ],
+              ),
+            ),
           ),
         ),
       ),

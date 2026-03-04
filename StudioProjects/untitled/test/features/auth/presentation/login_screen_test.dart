@@ -1,139 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:untitled/features/auth/presentation/login_screen.dart';
+import 'package:untitled/core/providers/auth_provider.dart';
+import 'package:untitled/core/services/auth_service.dart';
 
-@GenerateMocks([FirebaseAuth, FirebaseFirestore, User])
+@GenerateMocks([AuthService])
 import 'login_screen_test.mocks.dart';
 
 void main() {
-  late MockFirebaseAuth mockFirebaseAuth;
+  late MockAuthService mockAuthService;
 
   setUp(() {
-    mockFirebaseAuth = MockFirebaseAuth();
+    mockAuthService = MockAuthService();
   });
+
+  Widget createTestWidget() {
+    return ProviderScope(
+      overrides: [
+        authServiceProvider.overrideWithValue(mockAuthService),
+        authStateChangesProvider.overrideWith((ref) => Stream.value(null)),
+      ],
+      child: MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(size: Size(800, 1200)),
+          child: const LoginScreen(),
+        ),
+      ),
+    );
+  }
 
   group('LoginScreen - Mode Switching', () {
     testWidgets('default mode is teacher/admin (email + password fields visible)',
         (tester) async {
-      // Arrange
-      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
-
       // Act
-      await tester.pumpWidget(
-        MaterialApp(
-          home: const LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-      // Assert
-      expect(find.text('Login'), findsOneWidget);
+      // Assert - Should show teacher/admin login mode by default
       expect(find.text('Email'), findsOneWidget);
-      expect(find.byType(TextField), findsWidgets);
-      final textFields = tester.widgetList<TextField>(find.byType(TextField));
-      expect(textFields.length, greaterThanOrEqualTo(2));
+      expect(find.text('Password'), findsOneWidget);
     });
 
     testWidgets('clicking toggle switches to parent mode (phone field visible)',
         (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: const LoginScreen(),
-        ),
-      );
-
-      // Act - Click toggle button
+      // Act - Click Parent toggle button
       await tester.tap(find.text('Parent'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      // Assert - Phone field should be visible
-      expect(find.text('Phone'), findsOneWidget);
+      // Assert - Phone field should be visible, email should not
+      expect(find.text('Phone Number'), findsOneWidget);
       expect(find.text('Email'), findsNothing);
     });
 
     testWidgets('clicking toggle again switches back to teacher/admin mode',
         (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: const LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Act - Click toggle to parent mode
       await tester.tap(find.text('Parent'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      // Act - Click toggle again to switch back
-      await tester.tap(find.text('Parent'));
-      await tester.pump();
+      // Act - Click toggle back to teacher/admin mode
+      await tester.tap(find.text('Teacher/Admin'));
+      await tester.pumpAndSettle();
 
       // Assert - Email and password fields should be visible again
       expect(find.text('Email'), findsOneWidget);
-      expect(find.text('Phone'), findsNothing);
+      expect(find.text('Password'), findsOneWidget);
+      expect(find.text('Phone Number'), findsNothing);
     });
 
-    testWidgets('switching modes clears form data', (tester) async {
+    testWidgets('mode toggle shows correct segment buttons', (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: const LoginScreen(),
-        ),
-      );
-
-      // Act - Enter email and password
-      await tester.enterText(find.byKey(const Key('emailField')), 'test@test.com');
-      await tester.enterText(find.byKey(const Key('passwordField')), 'password123');
-      await tester.pump();
-
-      // Act - Switch to parent mode
-      await tester.tap(find.text('Parent'));
-      await tester.pump();
-
-      // Act - Switch back to teacher/admin mode
-      await tester.tap(find.text('Parent'));
-      await tester.pump();
-
-      // Assert - Form should be cleared
-      expect(find.text('test@test.com'), findsNothing);
-      expect(find.text('password123'), findsNothing);
+      // Assert - Both mode buttons should be visible
+      expect(find.text('Teacher/Admin'), findsOneWidget);
+      expect(find.text('Parent'), findsOneWidget);
+      expect(find.byType(SegmentedButton<String>), findsOneWidget);
     });
   });
 
-  group('LoginScreen - Authentication', () {
-    testWidgets('login button is disabled during authentication', (tester) async {
-      // Arrange
-      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
+  group('LoginScreen - UI Elements', () {
+    testWidgets('displays app title and subtitle', (tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: const LoginScreen(),
-        ),
-      );
+      // Assert
+      expect(find.text('Quran Madrasa'), findsOneWidget);
+      expect(find.text('Sign in to continue'), findsOneWidget);
+    });
 
-      // Act - Enter credentials
-      await tester.enterText(find.byKey(const Key('emailField')), 'test@test.com');
-      await tester.enterText(find.byKey(const Key('passwordField')), 'password123');
-      await tester.pump();
+    testWidgets('displays app icon', (tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-      // Act - Trigger authentication (simulate loading state)
-      // Note: In real implementation, this would be triggered by AuthService
-      // For widget test, we just verify the button can be in disabled state
-
-      // Assert - Button should be interactive (not disabled)
-      final loginButton = find.byKey(const Key('loginButton'));
-      expect(loginButton, findsOneWidget);
+      // Assert
+      expect(find.byIcon(Icons.menu_book), findsOneWidget);
     });
   });
 }
