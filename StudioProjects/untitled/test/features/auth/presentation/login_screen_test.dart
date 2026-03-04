@@ -5,37 +5,23 @@ import 'package:mockito/annotations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:untitled/core/services/auth_service.dart';
-import 'package:untitled/core/providers/auth_provider.dart';
+import 'package:untitled/features/auth/presentation/login_screen.dart';
 
 @GenerateMocks([FirebaseAuth, FirebaseFirestore, User])
 import 'login_screen_test.mocks.dart';
 
 void main() {
   late MockFirebaseAuth mockFirebaseAuth;
-  late MockFirebaseFirestore mockFirestore;
-  late MockUser mockUser;
-  late AuthService authService;
 
   setUp(() {
     mockFirebaseAuth = MockFirebaseAuth();
-    mockFirestore = MockFirebaseFirestore();
-    mockUser = MockUser();
-
-    when(mockUser.uid).thenReturn('test-user-id');
-    when(mockUser.email).thenReturn('teacher@test.com');
-
-    authService = AuthService(
-      firebaseAuth: mockFirebaseAuth,
-      firestore: mockFirestore,
-    );
   });
 
   group('LoginScreen - Mode Switching', () {
     testWidgets('default mode is teacher/admin (email + password fields visible)',
         (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges).thenReturn(Stream.value(null));
+      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
 
       // Act
       await tester.pumpWidget(
@@ -55,7 +41,7 @@ void main() {
     testWidgets('clicking toggle switches to parent mode (phone field visible)',
         (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges).thenReturn(Stream.value(null));
+      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -75,7 +61,7 @@ void main() {
     testWidgets('clicking toggle again switches back to teacher/admin mode',
         (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges).thenReturn(Stream.value(null));
+      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -98,7 +84,7 @@ void main() {
 
     testWidgets('switching modes clears form data', (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges).thenReturn(Stream.value(null));
+      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -128,7 +114,7 @@ void main() {
   group('LoginScreen - Authentication', () {
     testWidgets('login button is disabled during authentication', (tester) async {
       // Arrange
-      when(mockFirebaseAuth.authStateChanges).thenReturn(Stream.value(null));
+      when(mockFirebaseAuth.authStateChanges()).thenReturn(Stream.value(null));
 
       await tester.pumpWidget(
         MaterialApp(

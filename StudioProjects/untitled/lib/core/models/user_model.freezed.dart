@@ -9,29 +9,21 @@ part of 'user_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$UserModel {
-  String get id => throw _privateConstructorUsedError;
-  String get role => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
-  String get phone => throw _privateConstructorUsedError;
-  String get madrasaId => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+
+ String get id; String get role; String get email; String get phone; String get madrasaId; bool get active; DateTime get createdAt;
+/// Create a copy of UserModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>(this as UserModel, _$identity);
 
   /// Serializes this UserModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of UserModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $UserModelCopyWith<UserModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
 
 @override
@@ -129,10 +121,7 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -191,10 +180,7 @@ return $default(_that.id,_that.role,_that.email,_that.phone,_that.madrasaId,_tha
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String role,  String email,  String phone,  String madrasaId,  bool active,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that.id,_that.role,_that.email,_that.phone,_that.madrasaId,_that.active,_that.createdAt);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that.id,_that.role,_that.email,_that.phone,_that.madrasaId,_that.active,_that.createdAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -222,8 +208,8 @@ return $default(_that.id,_that.role,_that.email,_that.phone,_that.madrasaId,_tha
 /// @nodoc
 @JsonSerializable()
 
-class _UserModel implements UserModel {
-  const _UserModel({required this.id, required this.role, required this.email, required this.phone, required this.madrasaId, required this.active, required this.createdAt});
+class _UserModel extends UserModel {
+  const _UserModel({required this.id, required this.role, required this.email, required this.phone, required this.madrasaId, required this.active, required this.createdAt}): super._();
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String id;
