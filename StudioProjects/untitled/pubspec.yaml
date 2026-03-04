@@ -7,10 +7,6 @@ version: 1.0.0+1
 environment:
   sdk: ^3.8.1
 
-dependency_overrides:
-  analyzer: ^7.6.0
-  analyzer_plugin: ^0.14.0
-
 dependencies:
   flutter:
     sdk: flutter
@@ -38,17 +34,17 @@ dependencies:
   # Realtime Database (optional, already present)
   firebase_database: ^11.0.0
 
-  # Riverpod State Management
-  flutter_riverpod: ^2.4.9
-  riverpod_annotation: ^2.3.3
+  # Riverpod State Management (upgraded for analyzer 9+ compatibility)
+  flutter_riverpod: ^3.2.1
+  riverpod_annotation: ^4.0.2
 
   # Routing
   go_router: ^13.0.0
 
   # Utilities
   intl: ^0.18.1
-  freezed_annotation: ^2.4.1
-  json_annotation: ^4.8.1
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.11.0
   url_launcher: ^6.2.2
 
 dev_dependencies:
@@ -58,11 +54,16 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
   # Code Generation
-  build_runner: ^2.4.7
-  freezed: ^2.4.6
-  json_serializable: ^6.7.1
-  riverpod_generator: ^2.3.9
-  riverpod_lint: ^2.3.7
+  build_runner: ^2.11.1
+  freezed: ^3.2.5
+  json_serializable: ^6.13.0
+  riverpod_generator: ^4.0.1
+  riverpod_lint: ^3.0.0
+
+  # Testing
+  fake_cloud_firestore: ^3.0.0
+  firebase_auth_mocks: ^0.14.2
+  mockito: ^5.4.4
 
 flutter:
   uses-material-design: true

@@ -8,6 +8,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:untitled/firebase_options.dart';
 import 'package:untitled/core/utils/quran_utils.dart';
 import 'package:untitled/core/providers/example_provider.dart';
+import 'package:untitled/core/router/app_router.dart';
 
 /// Main entry point for Quran Madrasa application.
 ///
@@ -53,18 +54,18 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       title: 'Quran Madrasa',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const PlaceholderScreen(),
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }
